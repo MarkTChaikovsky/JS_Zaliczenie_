@@ -1,0 +1,154 @@
+// Uruchomiłem wszystko na serwerze live, tylko stronę index.html
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zaliczenie</title>
+</head>
+
+<style>
+
+    .card {
+        width: 80px;
+        height: 80px;
+        background-color: lightgray;
+        margin: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .game-board {
+        display: grid;
+        grid-template-columns: repeat(var(--numCols), 1fr);
+        grid-template-rows: repeat(var(--numRows), 1fr);
+        gap: 5px;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+</style>
+</head>
+<body>
+    <h1>Гра на пам'ять</h1>
+    <div>
+        <label for="rows">Кількість рядків:</label>
+        <input type="number" id="rows" min="2" value="4">
+        <br>
+        <label for="cols">Кількість стовпчиків:</label>
+        <input type="number" id="cols" min="2" value="4">
+        <br>
+        <button onclick="startGame()">Почати гру</button>
+    </div>
+    <div class="game-board" id="game-board"></div>
+    <script>
+        // Оголошення змінних
+        let gameBoard = document.getElementById('game-board');
+        let cards = [];
+        let flippedCards = [];
+        let score = 0;
+        let currentPlayer = 1;
+        let canFlip = true;
+
+        // Генерація значень карток
+        function generateCardValues(numPairs) {
+            let values = [];
+            for (let i = 1; i <= numPairs; i++) {
+                values.push(i);
+                values.push(i);
+            }
+            return shuffleArray(values);
+        }
+
+        // Перемішування масиву
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                let temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+            return array;
+        }
+
+        // Створення дошки з картками
+        async function createGameBoard() {
+            let numRowsInput = document.getElementById('rows');
+            let numColsInput = document.getElementById('cols');
+            let numRows = parseInt(numRowsInput.value);
+            let numCols = parseInt(numColsInput.value);
+            if (numRows < 2 || numCols < 2 || (numRows * numCols) % 2 !== 0) {
+                alert('Помилка в налаштуваннях гри.');
+                return;
+            }
+            numRowsInput.disabled = true;
+            numColsInput.disabled = true;
+            let totalCards = numRows * numCols;
+            let cardValues = generateCardValues(totalCards / 2);
+            gameBoard.style.setProperty('--numRows', numRows);
+            gameBoard.style.setProperty('--numCols', numCols);
+            for (let i = 0; i < totalCards; i++) {
+                let card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.value = cardValues[i];
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+                cards.push(card);
+            }
+        }
+
+        // Обробник кліку на картку
+        function flipCard() {
+            if (!canFlip || flippedCards.includes(this) || this.classList.contains('matched')) {
+                return;
+            }
+            this.textContent = this.dataset.value;
+            flippedCards.push(this);
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                setTimeout(checkMatch, 1000);
+            }
+        }
+
+        // Перевірка на збіг пари карток
+        function checkMatch() {
+            let card1 = flippedCards[0];
+            let card2 = flippedCards[1];
+            if (card1.dataset.value === card2.dataset.value) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                score++;
+                if (score === cards.length / 2) {
+                    endGame();
+                } else {
+                    currentPlayer = currentPlayer === 1 ? 2 : 1;
+                    canFlip = true;
+                    flippedCards = [];
+                }
+            } else {
+                card1.textContent = '';
+                card2.textContent = '';
+                currentPlayer = currentPlayer === 1 ? 2 : 1;
+                canFlip = true;
+                flippedCards = [];
+            }
+        }
+
+        // Завершення гри
+        function endGame() {
+            let message = 'Гра завершена! Гравець ' + currentPlayer + ' переміг.';
+            alert(message);
+        }
+
+        // Ініціалізація гри
+        async function startGame() {
+            let startButton = document.querySelector('button');
+            startButton.disabled = true;
+            await createGameBoard();
+        }
+    </script>
+</body>
+</html>
