@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <h1>Гра на пам'ять</h1>
+    <div>
+      <label for="rows">Кількість рядків:</label>
+      <input type="number" id="rows" min="2" value="4" />
+      <br />
+      <label for="cols">Кількість стовпчиків:</label>
+      <input type="number" id="cols" min="2" value="4" />
+      <br />
+      <button onclick="startGame()">Почати гру</button>
+    </div>
+    <div>
+      <p>Поточний гравець: <span id="currentPlayer">1</span></p>
+    </div>
+    <div class="game-board" id="game-board"></div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
