@@ -1,0 +1,21 @@
+
+.card {
+  width: 80px;
+  height: 80px;
+  background-color: lightgray;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(var(--numCols), 1fr);
+  grid-template-rows: repeat(var(--numRows), 1fr);
+  gap: 5px;
+  max-width: 400px;
+  margin: 0 auto;
+}
